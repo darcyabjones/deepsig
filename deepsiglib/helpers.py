@@ -14,13 +14,13 @@ from keras.preprocessing.sequence import pad_sequences
 from keras.models import model_from_json, Model
 from keras import backend as K
 
-import deepsigconfig as cfg
-import crf
+from . import deepsigconfig as cfg
+from . import crf
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 def printDate(msg):
-  print "[%s] %s" % (strftime("%a, %d %b %Y %H:%M:%S", localtime()), msg)
+  print("[%s] %s" % (strftime("%a, %d %b %Y %H:%M:%S", localtime()), msg))
 
 def SetUpTemporaryEnvironment():
   tempfile.tempdir = os.path.abspath(tempfile.mkdtemp(prefix="job.tmpd.",
@@ -34,7 +34,7 @@ def DestroyTemporaryEnvironment():
     printDate("Destroying job temporary enviroment [%s]" % tempfile.tempdir)
 
 def getNewTmpFile(prefix, suffix):
-  outTmpFile = tempfile.NamedTemporaryFile(mode   = 'write',
+  outTmpFile = tempfile.NamedTemporaryFile(mode   = 'w',
                                            prefix = prefix,
                                            suffix = suffix,
                                            delete = False)
@@ -210,7 +210,7 @@ def predictsp(X, cls, organism, cpu=1):
     ofs = open(crf_datf, 'w')
     for i in range(P.shape[0]):
       for j in range(P.shape[1]):
-        ofs.write(" ".join(map(str, list(P[i][j])) + ['G']) + '\n')
+        ofs.write(" ".join(list(map(str, list(P[i][j]))) + ['G']) + '\n')
       ofs.write('\n')
     ofs.close()
     C = []

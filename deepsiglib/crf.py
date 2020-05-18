@@ -90,7 +90,7 @@ class CRFState(object):
         return self.label
 
     def outgoing(self):
-        return self.trans.keys()
+        return list(self.trans.keys())
 
     def setTransition(self, t, value=0.0):
         self.trans[t] = value
@@ -99,7 +99,7 @@ class CRFState(object):
         return self.trans.get(t, 0.0)
 
     def hasTransition(self, t):
-        return self.trans.has_key(t)
+        return t in self.trans
 
     def setWeights(self, windowOffset, weights):
         self.weights[windowOffset] = weights
@@ -171,7 +171,7 @@ class CRF(object):
         try:
             modelFile = open(modelFile).readlines()
         except IOError:
-            print "Error: Failed to open/reading crf model file"
+            print("Error: Failed to open/reading crf model file")
             raise
         curr = None
 
@@ -180,7 +180,7 @@ class CRF(object):
             line = line.split()
             if line[0] == 'LABELS':
                 for lab in line[1:]:
-                    if not self.labels.has_key(lab):
+                    if lab not in self.labels:
                         self.labels[lab] = []
                     else:
                         raise DuplicateLabelError
@@ -189,7 +189,7 @@ class CRF(object):
                 self.state_obj['END'] = CRFState(label='END')
                 self.allst = sorted(line[1:])
                 for st in self.allst:
-                    if not self.labels.has_key(st):
+                    if st not in self.labels:
                         self.state_obj[st] = CRFState()
                         self.tying[st] = st
                     else:
@@ -282,7 +282,7 @@ class CRF(object):
         try:
             of = open(modelFile, 'w')
         except IOError:
-            print "Error opening/writing model file."
+            print("Error opening/writing model file.")
             raise
         of.write(str(self))
         of.close()
@@ -394,7 +394,7 @@ class CRF(object):
             self.likelihood += res[0]
             self.gradient += res[1]
 
-        print "Current log-likelihood:", self.likelihood
+        print("Current log-likelihood:", self.likelihood)
         return -self.likelihood, -1 * self.gradient
 
     def doLLComputation(self, w):
@@ -427,9 +427,9 @@ class CRF(object):
 
         start = self.initWeights()
         x, f, d = fmin_l_bfgs_b(self.computeLogLikelihood, start, m=7, args=(processors,), maxfun=iterations, iprint=-1)
-        print "Maximum log-likelihood :", -f
-        print "Gradient vector norm   :", numpy.linalg.norm(d['grad'])
-        print "Parameter vector norm  :", numpy.linalg.norm(x)
+        print("Maximum log-likelihood :", -f)
+        print("Gradient vector norm   :", numpy.linalg.norm(d['grad']))
+        print("Parameter vector norm  :", numpy.linalg.norm(x))
         self.likelihood = f
         self.setWeights(x)
 
@@ -449,7 +449,7 @@ class CRF(object):
                     ret = self[s].fw[j][i] * trans * int(j == len(self[s].fw) - 1)
                 else:
                     ret = self[s].fw[j - 1][i] * trans * self[t].scores[j] * self[t].bw[j][i]
-        except IndexError, KeyError:
+        except IndexError as KeyError:
             pass
         return ret
 

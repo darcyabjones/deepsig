@@ -1,8 +1,12 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import sys
 import os
-sys.path.append(os.environ['DEEPSIG_ROOT'])
+
+DEEPSIG_ROOT = os.environ.get('DEEPSIG_ROOT', None)
+if DEEPSIG_ROOT is not None:
+    sys.path.append(DEEPSIG_ROOT)
+
 import argparse
 
 DESC="DeepSig: Predictor of signal peptides in proteins"

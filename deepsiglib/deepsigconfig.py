@@ -1,6 +1,9 @@
 import os
+import sys
 
-DEEPSIG_ROOT = os.environ.get('DEEPSIG_ROOT')
+DEEPSIG_ROOT = os.environ.get('DEEPSIG_ROOT', None)
+if DEEPSIG_ROOT is None:
+    DEEPSIG_ROOT = sys.path[0]
 
 AAORDER = 'VLIMFWYGAPSTCHRKQEND'
 
